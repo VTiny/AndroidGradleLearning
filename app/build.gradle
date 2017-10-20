@@ -1,0 +1,125 @@
+import java.lang.reflect.Method
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+    defaultConfig {
+        applicationId "com.coder1x.gradletest"
+        minSdkVersion 17
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        //no2
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "lx", "\"lxlxlx\""
+            log("build type - release")
+        }
+        debug {
+            buildConfigField "String", "lx", "\"lxlxlx\""
+            log("build type - debug")
+            debuggable true
+            applicationVariants.all {
+                variant ->
+//                    variant.assemble.doFirst {
+//                        String path = getProjectDir().getPath() + "/src/main/res/values/strings.xml"
+//                        File file = new File(path)
+//                        log('assemble do first')
+//                        doFirst(file)
+//                    }
+                    variant.assemble.doLast {
+//                        Class clazz = Class.forName("com.coder1x.gradletest.Util")
+//                        Method method = clazz.getMethod("doBefore")
+//                        method.invoke()
+
+                        //right
+//                        String path = getProjectDir().getPath() + "/src/main/res/values/strings.xml"
+//                        File file = new File(path)
+//                        log("assemble do last")
+//                        doLast(file)
+                    }
+            }
+        }
+    }
+}
+
+android.applicationVariants.all {
+        //no1
+    variant ->
+        if (true) {
+//            Class clazz = Class.forName("com.coder1x.gradletest.Util")
+//            Method method = clazz.getMethod("parse", String.class)
+//            method.invoke(null, getProjectDir().getPath() + "/src/main/res/values/strings.xml")
+            //right
+//            String path = getProjectDir().getPath() + "/src/main/res/values/strings.xml"
+//            File file = new File(path)
+//            log('android.applicationVariants.all')
+//            doFirst(file)
+
+//            doFirst{
+//            String path = getProjectDir().getPath() + "/src/main/res/values/strings.xml"
+//            File file = new File(path)
+//            log(file.exists())
+//            dealStringXml(file)
+//            buildConfigField "String", "lx", "\"lxlxlx\""
+//            }
+        }
+}
+
+def log(Object content) {
+    String TAG = "LX-LOG: "
+    print(TAG + content + '\n')
+}
+
+def dealStringXml(File stringFile) {
+    Map<String, String> stringMap = new HashMap<>()
+    BufferedReader reader = new BufferedReader(new FileReader(stringFile))
+    String lineContent, key, value
+
+    while ((lineContent = reader.readLine()) != null) {
+        log(lineContent)
+
+        if (lineContent.contains("\"")) {
+            key = lineContent.split("\"")[1]
+            value = lineContent.split(">")[1].split("<")[0]
+            log("key=" + key)
+            log("value=" + value)
+        }
+
+    }
+
+}
+
+def doFirst(File file) {
+    FileWriter writer = new FileWriter(file)
+    writer.write("<resources>\n" +
+            "    <string name=\"app_name\">GradleTest</string>\n" +
+            "    <string name=\"lx\">HelloWorld</string>\n" +
+            "</resources>")
+    writer.close()
+}
+def doLast(File file) {
+    FileWriter writer = new FileWriter(file)
+    writer.write("<resources>\n" +
+            "    <string name=\"app_name\">GradleTest</string>\n" +
+            "    <string name=\"lx\">asdf</string>\n" +
+            "</resources>")
+    writer.close()
+}
+//no3 merge res
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
+}
